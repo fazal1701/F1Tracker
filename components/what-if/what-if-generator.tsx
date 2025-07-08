@@ -463,4 +463,98 @@ export function WhatIfGenerator() {
                 <div className="text-xs text-gray-600 mb-2">{variable.description}</div>
                 
                 {variable.type === "boolean" && (
-                  <div className="flex items-center space-x-2">\
+                  <input
+                    type="checkbox"
+                    checked={!!variables[variable.id]}
+                    onChange={e => updateVariable(variable.id, e.target.checked)}
+                    className="form-checkbox h-5 w-5 text-blue-600"
+                  />
+                )}
+                {variable.type === "slider" && (
+                  <input
+                    type="range"
+                    min={variable.min}
+                    max={variable.max}
+                    value={variables[variable.id]}
+                    onChange={e => updateVariable(variable.id, Number(e.target.value))}
+                    className="w-full"
+                  />
+                )}
+                {variable.type === "select" && (
+                  <select
+                    value={variables[variable.id]}
+                    onChange={e => updateVariable(variable.id, e.target.value)}
+                    className="form-select w-full"
+                  >
+                    {variable.options?.map(option => (
+                      <option key={option} value={option}>{option}</option>
+                    ))}
+                  </select>
+                )}
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Generate Button */}
+      <div className="flex justify-end">
+        <button
+          onClick={generateScenario}
+          disabled={isGenerating}
+          className="px-6 py-2 bg-blue-600 text-white rounded-lg font-semibold disabled:opacity-50"
+        >
+          {isGenerating ? "Generating..." : "Generate What-If"}
+        </button>
+      </div>
+
+      {/* Results */}
+      {results && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Scenario Results</CardTitle>
+            <CardDescription>AI-generated alternate history and ripple effects</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div>
+                <h3 className="font-semibold">Modified Outcome</h3>
+                <pre className="bg-gray-100 p-2 rounded text-xs overflow-x-auto">{JSON.stringify(results.modifiedOutcome, null, 2)}</pre>
+              </div>
+              <div>
+                <h3 className="font-semibold">Ripple Effects</h3>
+                <ul className="list-disc ml-6 text-sm">
+                  {results.rippleEffects.map((effect, idx) => (
+                    <li key={idx}>{effect}</li>
+                  ))}
+                </ul>
+              </div>
+              <div>
+                <h3 className="font-semibold">Championship Impact</h3>
+                <pre className="bg-gray-100 p-2 rounded text-xs overflow-x-auto">{JSON.stringify(results.championshipImpact, null, 2)}</pre>
+              </div>
+              <div>
+                <h3 className="font-semibold">Career Changes</h3>
+                <ul className="list-disc ml-6 text-sm">
+                  {results.careerChanges.map((change, idx) => (
+                    <li key={idx}>{change.driver}: {change.change} ({change.impact})</li>
+                  ))}
+                </ul>
+              </div>
+              <div className="flex space-x-4">
+                <div>
+                  <span className="font-semibold">Probability Score:</span> {results.probabilityScore}%
+                </div>
+                <div>
+                  <span className="font-semibold">Historical Plausibility:</span> {results.historicalPlausibility}%
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+    </div>
+  )
+}
+
+export default WhatIfGenerator;
